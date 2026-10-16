@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IHM — Monitoramento do Motor Trifásico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <div>
+          <strong>MONITORAMENTO INDUSTRIAL</strong>
+          <span>ANÁLISE DE SENSORES</span>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-section="dashboard">
+          <span class="nav-icon">▦</span>
+          Dashboard
+        </button>
+        <div class="dashboard-submenu">
+          <button class="dashboard-choice active" data-dashboard="motor">Motor Trifásico</button>
+          <button class="dashboard-choice" data-dashboard="pump">Bomba Hidráulica</button>
+        </div>
+        <button class="nav-item" data-section="historico">
+          <span class="nav-icon">◴</span>
+          Histórico
+        </button>
+        <button class="nav-item" data-section="sistema">
+          <span class="nav-icon">⚙</span>
+          Sistema
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="connection-box">
+          <span class="connection-dot"></span>
+          <div>
+            <strong id="connectionText">Aguardando dados</strong>
+            <small>ThingSpeak • canal 3539771</small>
+          </div>
+        </div>
+        <div class="version">IHM v1.0 • Projeto acadêmico</div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">MONITORAMENTO EM TEMPO REAL</p>
+          <h1 id="pageTitle">Motor Trifásico</h1>
+          <p id="pageSubtitle" class="subtitle">Sistema de acompanhamento de temperatura, corrente e vibração.</p>
+        </div>
+
+        <div class="topbar-right">
+          <div class="live-status">
+            <span class="live-dot"></span>
+            <span id="liveLabel">AGUARDANDO</span>
+          </div>
+          <div class="last-update">
+            <span>Última atualização</span>
+            <strong id="lastUpdate">--:--:--</strong>
+          </div>
+        </div>
+      </header>
+
+      <section id="dashboard" class="section active-section">
+        <div class="hero-status">
+          <div>
+            <span class="section-label">STATUS GERAL</span>
+            <h2 id="motorStatus">Aguardando medições</h2>
+            <p id="statusDescription">Aguardando dados válidos.</p>
+          </div>
+          <div class="status-indicator" id="statusIndicator">
+            <span></span>
+            NORMAL
+          </div>
+        </div>
+
+        <div class="metrics-grid">
+          <article class="metric-card temperature">
+            <div class="metric-head">
+              <span class="metric-icon">°C</span>
+              <span class="metric-label">TEMPERATURA</span>
+            </div>
+            <div class="metric-value">
+              <strong id="temperatureValue">—</strong>
+              <span>°C</span>
+            </div>
+            <div class="metric-footer">
+              <span id="temperatureState" class="state">—</span>
+              <span>Sensor T1</span>
+            </div>
+          </article>
+
+          <article class="metric-card current">
+            <div class="metric-head">
+              <span class="metric-icon">A</span>
+              <span class="metric-label">CORRENTE</span>
+            </div>
+            <div class="metric-value">
+              <strong id="currentValue">—</strong>
+              <span>A</span>
+            </div>
+            <div class="metric-footer">
+              <span id="currentState" class="state">—</span>
+              <span>Sensor I1</span>
+            </div>
+          </article>
+
+          <article class="metric-card vibration">
+            <div class="metric-head">
+              <span class="metric-icon">X</span>
+              <span class="metric-label">VIBRAÇÃO X</span>
+            </div>
+            <div class="metric-value">
+              <strong id="vibrationXValue">—</strong>
+              <span id="vibrationUnit">—</span>
+            </div>
+            <div class="metric-footer">
+              <span id="vibrationXState" class="state">—</span>
+              <span>Eixo X</span>
+            </div>
+          </article>
+
+          <article class="metric-card vibration">
+            <div class="metric-head">
+              <span class="metric-icon">Y</span>
+              <span class="metric-label">VIBRAÇÃO Y</span>
+            </div>
+            <div class="metric-value">
+              <strong id="vibrationYValue">—</strong>
+              <span id="vibrationUnitY">—</span>
+            </div>
+            <div class="metric-footer">
+              <span id="vibrationYState" class="state">—</span>
+              <span>Eixo Y</span>
+            </div>
+          </article>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="panel chart-panel">
+            <div class="panel-header">
+              <div>
+                <span class="section-label">TENDÊNCIA</span>
+                <h3>Temperatura</h3>
+              </div>
+              <div class="chart-value">
+                <strong id="chartTempCurrent">— °C</strong>
+                <span>últimas leituras</span>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="temperatureChart"></canvas>
+            </div>
+          </article>
+
+          <article class="panel chart-panel">
+            <div class="panel-header">
+              <div>
+                <span class="section-label">TENDÊNCIA</span>
+                <h3>Corrente</h3>
+              </div>
+              <div class="chart-value">
+                <strong id="chartCurrentCurrent">— A</strong>
+                <span>últimas leituras</span>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="currentChart"></canvas>
+            </div>
+          </article>
+
+          <article class="panel chart-panel wide">
+            <div class="panel-header">
+              <div>
+                <span class="section-label">VIBRAÇÃO</span>
+                <h3>Eixos X e Y</h3>
+              </div>
+              <div class="legend">
+                <span><i></i> Eixo X</span>
+                <span><i></i> Eixo Y</span>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="vibrationChart"></canvas>
+            </div>
+          </article>
+
+          <article class="panel system-panel">
+            <div class="panel-header">
+              <div>
+                <span class="section-label">SISTEMA</span>
+                <h3>Conectividade</h3>
+              </div>
+            </div>
+            <div class="system-list">
+              <div class="system-row">
+                <span>Arduino Mega</span>
+                <strong class="online-text">Não verificado</strong>
+              </div>
+              <div class="system-row">
+                <span>Wi-Fi</span>
+                <strong class="online-text">Não verificado</strong>
+              </div>
+              <div class="system-row">
+                <span>ThingSpeak</span>
+                <strong id="cloudStatus" class="waiting-text">Aguardando</strong>
+              </div>
+              <div class="system-row">
+                <span>API</span>
+                <strong id="apiStatus" class="waiting-text">Aguardando</strong>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="alert-panel" id="alertPanel">
+          <div class="alert-icon">!</div>
+          <div>
+            <strong id="alertTitle">Sistema monitorado</strong>
+            <p id="alertMessage">Sem medições disponíveis.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="pumpDashboard" class="section equipment-dashboard">
+        <div class="hero-status">
+          <div>
+            <span class="section-label">STATUS GERAL</span>
+            <h2 id="pumpStatus">Sem canal configurado</h2>
+            <p id="pumpStatusDescription">Aguardando dados válidos.</p>
+          </div>
+          <div class="status-indicator" id="pumpStatusIndicator">
+            <span></span>
+            NORMAL
+          </div>
+        </div>
+
+        <div class="metrics-grid">
+          <article class="metric-card">
+            <div class="metric-head">
+              <span class="metric-icon">bar</span>
+              <span class="metric-label">PRESSÃO</span>
+            </div>
+            <div class="metric-value">
+              <strong id="pressureValue">—</strong>
+              <span>bar</span>
+            </div>
+            <div class="metric-footer">
+              <span id="pressureState" class="state">—</span>
+              <span>Sensor P1</span>
+            </div>
+          </article>
+
+          <article class="metric-card">
+            <div class="metric-head">
+              <span class="metric-icon">Q</span>
+              <span class="metric-label">VAZÃO</span>
+            </div>
+            <div class="metric-value">
+              <strong id="flowValue">—</strong>
+              <span>L/min</span>
+            </div>
+            <div class="metric-footer">
+              <span id="flowState" class="state">—</span>
+              <span>Sensor Q1</span>
+            </div>
+          </article>
+
+          <article class="metric-card temperature">
+            <div class="metric-head">
+              <span class="metric-icon">°C</span>
+              <span class="metric-label">TEMPERATURA</span>
+            </div>
+            <div class="metric-value">
+              <strong id="pumpTemperatureValue">—</strong>
+              <span>°C</span>
+            </div>
+            <div class="metric-footer">
+              <span id="pumpTemperatureState" class="state">—</span>
+              <span>Sensor T2</span>
+            </div>
+          </article>
+
+          <article class="metric-card vibration">
+            <div class="metric-head">
+              <span class="metric-icon">V</span>
+              <span class="metric-label">VIBRAÇÃO</span>
+            </div>
+            <div class="metric-value">
+              <strong id="pumpVibrationValue">—</strong>
+              <span>—</span>
+            </div>
+            <div class="metric-footer">
+              <span id="pumpVibrationState" class="state">—</span>
+              <span>Sensor V1</span>
+            </div>
+          </article>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="panel chart-panel">
+            <div class="panel-header">
+              <div>
+                <span class="section-label">TENDÊNCIA</span>
+                <h3>Pressão</h3>
+              </div>
+              <div class="chart-value">
+                <strong id="chartPressureCurrent">— bar</strong>
+                <span>últimas leituras</span>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="pressureChart"></canvas>
+            </div>
+          </article>
+
+          <article class="panel chart-panel">
+            <div class="panel-header">
+              <div>
+                <span class="section-label">TENDÊNCIA</span>
+                <h3>Vazão</h3>
+              </div>
+              <div class="chart-value">
+                <strong id="chartFlowCurrent">— L/min</strong>
+                <span>últimas leituras</span>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="flowChart"></canvas>
+            </div>
+          </article>
+
+          <article class="panel chart-panel wide">
+            <div class="panel-header">
+              <div>
+                <span class="section-label">TEMPERATURA</span>
+                <h3>Temperatura da bomba</h3>
+              </div>
+              <div class="chart-value">
+                <strong id="chartPumpTempCurrent">— °C</strong>
+                <span>últimas leituras</span>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="pumpTemperatureChart"></canvas>
+            </div>
+          </article>
+
+          <article class="panel system-panel">
+            <div class="panel-header">
+              <div>
+                <span class="section-label">SISTEMA</span>
+                <h3>Conectividade</h3>
+              </div>
+            </div>
+            <div class="system-list">
+              <div class="system-row">
+                <span>Arduino Mega</span>
+                <strong class="online-text">Não verificado</strong>
+              </div>
+              <div class="system-row">
+                <span>Wi-Fi</span>
+                <strong class="online-text">Não verificado</strong>
+              </div>
+              <div class="system-row">
+                <span>ThingSpeak</span>
+                <strong class="waiting-text">Aguardando</strong>
+              </div>
+              <div class="system-row">
+                <span>API</span>
+                <strong class="waiting-text">Aguardando</strong>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="alert-panel" id="pumpAlertPanel">
+          <div class="alert-icon">!</div>
+          <div>
+            <strong id="pumpAlertTitle">Sistema monitorado</strong>
+            <p id="pumpAlertMessage">Sem medições disponíveis.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="historico" class="section">
+        <div class="page-heading">
+          <span class="section-label">REGISTRO</span>
+          <h2>Histórico de medições</h2>
+          <p>Leituras recentes do equipamento selecionado.</p>
+        </div>
+        <div class="panel table-panel">
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Horário</th>
+                  <th>Temperatura</th>
+                  <th>Corrente</th>
+                  <th>Vibração X</th>
+                  <th>Vibração Y</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="historyBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="sistema" class="section">
+        <div class="page-heading">
+          <span class="section-label">CONFIGURAÇÃO</span>
+          <h2>Informações do sistema</h2>
+          <p>Integração com a API pública do ThingSpeak.</p>
+        </div>
+        <div class="settings-grid">
+          <article class="panel info-card">
+            <span class="section-label">ARQUITETURA</span>
+            <h3>Fluxo de dados</h3>
+            <div class="flow">
+              <div>Motor 3~</div><b>↓</b>
+              <div>Sensores</div><b>↓</b>
+              <div>Arduino Mega</div><b>↓</b>
+              <div>Wi-Fi</div><b>↓</b>
+              <div>ThingSpeak</div><b>↓</b>
+              <div>API</div><b>↓</b>
+              <div>Esta IHM</div>
+            </div>
+          </article>
+          <article class="panel info-card">
+            <span class="section-label">VARIÁVEIS</span>
+            <h3>Dados monitorados</h3>
+            <div class="variable-list">
+              <div><code>temperature</code><span>Temperatura (°C)</span></div>
+              <div><code>current</code><span>Corrente (A)</span></div>
+              <div><code>vibrationX</code><span>Vibração no eixo X</span></div>
+              <div><code>vibrationY</code><span>Vibração no eixo Y</span></div>
+            </div>
+            <p class="note">A unidade da vibração permanece genérica até definirmos o modelo exato do sensor.</p>
+          </article>
+        </div>
+      </section>
+
+      <footer>
+        <span>© 2026 • Sistema de Monitoramento de Motor Trifásico</span>
+        <span>Fonte de dados: <strong>THINGSPEAK</strong></span>
+      </footer>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
